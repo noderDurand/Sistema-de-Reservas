@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fecha: 2026-09-06
+  estado: MyString
+  cancha: one
+  turno: one
+  user: one
+
+two:
+  fecha: 2026-09-06
+  estado: MyString
+  cancha: two
+  turno: two
+  user: two
