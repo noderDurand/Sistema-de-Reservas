@@ -1,0 +1,29 @@
+<h1>Canchas</h1>
+
+<%= link_to "Nueva cancha", new_admin_cancha_path %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Capacidad</th>
+      <th>Precio</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @canchas.each do |cancha| %>
+      <tr>
+        <td><%= cancha.nombre %></td>
+        <td><%= cancha.capacidad %></td>
+        <td>$<%= cancha.precio %></td>
+        <td>
+          <%= link_to "Ver", admin_cancha_path(cancha) %>
+          <%= link_to "Editar", edit_admin_cancha_path(cancha) %>
+          <%= button_to "Eliminar", admin_cancha_path(cancha), method: :delete,
+                data: { turbo_confirm: "¿Seguro?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

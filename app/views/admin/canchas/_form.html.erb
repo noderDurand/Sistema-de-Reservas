@@ -1,0 +1,23 @@
+<%= form_with model: [:admin, cancha] do |f| %>
+  <% if cancha.errors.any? %>
+    <div style="color: red;">
+      <% cancha.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :nombre %>
+    <%= f.text_field :nombre %>
+  </div>
+  <div>
+    <%= f.label :capacidad %>
+    <%= f.number_field :capacidad %>
+  </div>
+  <div>
+    <%= f.label :precio %>
+    <%= f.number_field :precio, step: 0.01 %>
+  </div>
+  <%= f.submit %>
+<% end %>

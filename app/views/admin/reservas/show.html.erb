@@ -1,0 +1,9 @@
+<h1>Reserva #<%= @reserva.id %></h1>
+<p>Fecha: <%= @reserva.fecha %></p>
+<p>Cancha: <%= @reserva.cancha.nombre %></p>
+<p>Turno: <%= @reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= @reserva.turno.hora_fin.strftime("%H:%M") %></p>
+<p>Cliente: <%= @reserva.user.name %></p>
+<p>Estado: <%= @reserva.estado %></p>
+
+<%= link_to "Editar", edit_admin_reserva_path(@reserva) %>
+<%= link_to "Volver", admin_reservas_path %>

@@ -1,0 +1,12 @@
+<h1>Ingreso administrador</h1>
+<%= form_with url: admin_login_path, method: :post do |f| %>
+    <div>
+        <%= f.label :email%>
+        <%= f.email_field :email %>
+    </div>
+    <div>
+        <%= f.label :password, "Contraseña"%>
+        <%= f.password_field :password %>
+    </div>
+    <%= f.submit "Ingresar" %>
+<% end %>

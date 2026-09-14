@@ -1,0 +1,5 @@
+<h1>Turno</h1>
+<p>De <%= @turno.hora_inicio.strftime("%H:%M") %> a <%= @turno.hora_fin.strftime("%H:%M") %></p>
+
+<%= link_to "Editar", edit_admin_turno_path(@turno) %>
+<%= link_to "Volver", admin_turnos_path %>
