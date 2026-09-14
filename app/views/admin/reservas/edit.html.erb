@@ -1,0 +1,9 @@
+<h1>Editar reserva #<%= @reserva.id %></h1>
+
+<%= form_with model: [:admin, @reserva] do |f| %>
+  <div>
+    <%= f.label :estado %>
+    <%= f.select :estado, Reserva::ESTADOS %>
+  </div>
+  <%= f.submit %>
+<% end %>

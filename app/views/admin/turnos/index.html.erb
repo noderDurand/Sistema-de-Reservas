@@ -1,0 +1,27 @@
+<h1>Turnos</h1>
+
+<%= link_to "Nuevo turno", new_admin_turno_path %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Hora inicio</th>
+      <th>Hora fin</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @turnos.each do |turno| %>
+      <tr>
+        <td><%= turno.hora_inicio.strftime("%H:%M") %></td>
+        <td><%= turno.hora_fin.strftime("%H:%M") %></td>
+        <td>
+          <%= link_to "Ver", admin_turno_path(turno) %>
+          <%= link_to "Editar", edit_admin_turno_path(turno) %>
+          <%= button_to "Eliminar", admin_turno_path(turno), method: :delete,
+                data: { turbo_confirm: "¿Seguro?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

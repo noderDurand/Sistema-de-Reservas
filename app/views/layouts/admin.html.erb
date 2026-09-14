@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin - Futbol5 Reservas</title>
+        <%= csrf_meta_tags %>
+        <%= csp_meta_tag %>
+        <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    </head>
+    <body>
+        <nav style="padding: 1rem; background: #222; color: white;">
+            <% if current_user %>
+              <%= link_to "Dashboard", admin_root_path, style: "color: white; margin-rigth: 1rem;" %>
+              <%= link_to "Canchas", admin_canchas_path, style: "color: white; margin-rigth: 1rem;" %>
+              <%= link_to "Turnos", admin_turnos_path, style: "color: white; margin-rigth: 1rem;" %>
+              <%= link_to "Reservas", admin_reservas_path, style: "color: white; margin-rigth: 1rem;" %>
+              <%= button_to "Cerrar Sesion", admin_logout_path, method: :delete, style: "display: inline; color: white;" %>
+            <% end %>
+        </nav>
+
+        <main style="padding: 2rem;">
+            <% if notice %><p style="color: green;"><%= notice %></p><% end %>
+            <% if alert %><p style="color: red;"><%= alert %></p><% end %>
+            <%= yield %>
+        </main>
+    </body>
+</html>

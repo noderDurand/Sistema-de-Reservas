@@ -1,0 +1,29 @@
+<h1>Reservas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Cancha</th>
+      <th>Turno</th>
+      <th>Cliente</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @reservas.each do |reserva| %>
+      <tr>
+        <td><%= reserva.fecha %></td>
+        <td><%= reserva.cancha.nombre %></td>
+        <td><%= reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= reserva.turno.hora_fin.strftime("%H:%M") %></td>
+        <td><%= reserva.user.name %></td>
+        <td><%= reserva.estado %></td>
+        <td>
+          <%= link_to "Ver", admin_reserva_path(reserva) %>
+          <%= link_to "Editar", edit_admin_reserva_path(reserva) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

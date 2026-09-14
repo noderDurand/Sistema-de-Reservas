@@ -1,0 +1,6 @@
+<h1><%= @cancha.nombre %></h1>
+<p> Capacidad: <%= @cancha.capacidad %></p>
+<p> Precio: $<%= @cancha.precio %></p>
+
+<%= link_to "Editar", edit_admin_cancha_path(@cancha) %>
+<%= link_to "Volver", admin_canchas_path %>
