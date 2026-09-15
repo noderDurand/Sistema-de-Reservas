@@ -33,3 +33,5 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Contexto del proyecto para el asistente de IA — no se sube al repo.
+CLAUDE.md
