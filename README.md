@@ -11,20 +11,20 @@ API JSON para el front-end público (TP2).
 
 ## Instalación y ejecución
 
-git clone <url-del-repo>
-cd futbol5_reservas
-bundle install
+- git clone <url-del-repo>
+- cd futbol5_reservas
+- bundle install
 
 ## Base de datos
 
-rails db:create
-rails db:migrate
-rails db:seed
+- rails db:create
+- rails db:migrate
+- rails db:seed
 
 ## Levantar el servidor
 
-rails server
-La app queda disponible en http://localhost:3000
+- rails server
+- La app queda disponible en http://localhost:3000
 
 ## Acceso al back-office
 
