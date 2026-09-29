@@ -1,4 +1,4 @@
-<%= form_with model: [:admin, cancha] do |f| %>
+<%= form_with model: [:admin, cancha], multipart: true do |f| %>
   <% if cancha.errors.any? %>
     <div style="color: red;">
       <% cancha.errors.full_messages.each do |msg| %>
@@ -18,6 +18,10 @@
   <div>
     <%= f.label :precio %>
     <%= f.number_field :precio, step: 0.01 %>
+  </div>
+  <div>
+    <%= f.label :foto, "Foto de la Cancha" %>
+    <%= f.file_field :foto, accept: "image/*" %>
   </div>
   <%= f.submit %>
 <% end %>

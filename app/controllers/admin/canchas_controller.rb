@@ -44,6 +44,6 @@ class Admin::CanchasController < Admin::BaseController
   end
 
   def cancha_params
-    params.require(:cancha).permit(:nombre, :capacidad, :precio)
+    params.require(:cancha).permit(:nombre, :capacidad, :precio, :foto)
   end
 end

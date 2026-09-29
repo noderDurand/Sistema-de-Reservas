@@ -5,6 +5,7 @@
 <table>
   <thead>
     <tr>
+      <th>Foto</th>
       <th>Nombre</th>
       <th>Capacidad</th>
       <th>Precio</th>
@@ -14,6 +15,11 @@
   <tbody>
     <% @canchas.each do |cancha| %>
       <tr>
+        <td>
+          <% if cancha.foto.attached? %>
+            <%= image_tag cancha.foto, style: "max-width: 80px" %>
+          <% end %>
+        </td>
         <td><%= cancha.nombre %></td>
         <td><%= cancha.capacidad %></td>
         <td>$<%= cancha.precio %></td>

@@ -1,15 +1,18 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  phone: MyString
-  email: MyString
-  password_digest: MyString
-  role: MyString
+  name: Juan Perez
+  phone: "1122334455"
+  email: juan@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: cliente
+  api_token: token-uno
 
 two:
-  name: MyString
-  phone: MyString
-  email: MyString
-  password_digest: MyString
-  role: MyString
+  name: Admin Uno
+  phone: "1100000000"
+  email: admin@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  role: admin
+  api_token: token-dos
+

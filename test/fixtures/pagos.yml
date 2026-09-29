@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  fecha: 2026-09-06 22:20:57
-  precio: 9.99
-  modo: MyString
+  fecha: 2026-09-20 10:00:00
+  precio: 5000
+  modo: efectivo
   reserva: one
 
 two:
-  fecha: 2026-09-06 22:20:57
-  precio: 9.99
-  modo: MyString
+  fecha: 2026-09-21 10:00:00
+  precio: 7000
+  modo: online
   reserva: two

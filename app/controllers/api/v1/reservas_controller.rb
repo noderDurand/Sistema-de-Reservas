@@ -13,6 +13,7 @@ class Api::V1::ReservasController < Api::V1::BaseController
   def create
     reserva = current_api_user.reservas.new(reserva_params)
     if reserva.save
+      ReservaMailer.confirmation(reserva).deliver_later
       render json: reserva, status: :created
     else
       render json: { errors: reserva.errors.full_messages }, status: :unprocessable_entity
