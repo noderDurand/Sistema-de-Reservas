@@ -2,5 +2,9 @@
 <p> Capacidad: <%= @cancha.capacidad %></p>
 <p> Precio: $<%= @cancha.precio %></p>
 
+<% if @cancha.foto.attached? %>
+    <%= image_tag @cancha.foto, style: "max-width: 300px;" %>
+<% end %>
+
 <%= link_to "Editar", edit_admin_cancha_path(@cancha) %>
 <%= link_to "Volver", admin_canchas_path %>

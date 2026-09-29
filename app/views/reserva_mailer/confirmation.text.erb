@@ -1,0 +1,12 @@
+¡Reserva confirmada!
+
+Hola <%= @user.name %>,
+
+Tu reserva fue registrada con éxito:
+
+Cancha: <%= @cancha.nombre %>
+Fecha: <%= @reserva.fecha.strftime("%d/%m/%Y") %>
+Horario: <%= @turno.hora_inicio.strftime("%H:%M") %> - <%= @turno.hora_fin.strftime("%H:%M") %>
+Estado: <%= @reserva.estado %>
+
+¡Te esperamos!
