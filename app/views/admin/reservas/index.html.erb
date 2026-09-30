@@ -1,29 +1,39 @@
-<h1>Reservas</h1>
+<div class="page-header">
+  <h1>Reservas</h1>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Cancha</th>
-      <th>Turno</th>
-      <th>Cliente</th>
-      <th>Estado</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @reservas.each do |reserva| %>
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
       <tr>
-        <td><%= reserva.fecha %></td>
-        <td><%= reserva.cancha.nombre %></td>
-        <td><%= reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= reserva.turno.hora_fin.strftime("%H:%M") %></td>
-        <td><%= reserva.user.name %></td>
-        <td><%= reserva.estado %></td>
-        <td>
-          <%= link_to "Ver", admin_reserva_path(reserva) %>
-          <%= link_to "Editar", edit_admin_reserva_path(reserva) %>
-        </td>
+        <th>Fecha</th>
+        <th>Cancha</th>
+        <th>Turno</th>
+        <th>Cliente</th>
+        <th>Estado</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @reservas.each do |reserva| %>
+        <tr>
+          <td><strong><%= reserva.fecha.strftime("%d/%m/%Y") %></strong></td>
+          <td><%= reserva.cancha.nombre %></td>
+          <td><%= reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= reserva.turno.hora_fin.strftime("%H:%M") %></td>
+          <td><%= reserva.user.name %></td>
+          <td><span class="badge badge-<%= reserva.estado %>"><%= reserva.estado %></span></td>
+          <td>
+            <div class="actions">
+              <%= link_to "Ver", admin_reserva_path(reserva), class: "btn btn-secondary btn-sm" %>
+              <%= link_to "Cambiar estado", edit_admin_reserva_path(reserva), class: "btn btn-secondary btn-sm" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if @reservas.empty? %>
+        <tr><td colspan="6" class="empty">Todavía no hay reservas. Se crean desde la API.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

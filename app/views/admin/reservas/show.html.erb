@@ -1,9 +1,26 @@
-<h1>Reserva #<%= @reserva.id %></h1>
-<p>Fecha: <%= @reserva.fecha %></p>
-<p>Cancha: <%= @reserva.cancha.nombre %></p>
-<p>Turno: <%= @reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= @reserva.turno.hora_fin.strftime("%H:%M") %></p>
-<p>Cliente: <%= @reserva.user.name %></p>
-<p>Estado: <%= @reserva.estado %></p>
+<div class="page-header">
+  <h1>Reserva #<%= @reserva.id %></h1>
+  <div class="actions">
+    <%= link_to "Cambiar estado", edit_admin_reserva_path(@reserva), class: "btn btn-primary" %>
+    <%= link_to "Volver", admin_reservas_path, class: "btn btn-secondary" %>
+  </div>
+</div>
 
-<%= link_to "Editar", edit_admin_reserva_path(@reserva) %>
-<%= link_to "Volver", admin_reservas_path %>
+<div class="card card-narrow">
+  <dl class="detail-list">
+    <dt>Estado</dt>
+    <dd><span class="badge badge-<%= @reserva.estado %>"><%= @reserva.estado %></span></dd>
+
+    <dt>Fecha</dt>
+    <dd><%= @reserva.fecha.strftime("%d/%m/%Y") %></dd>
+
+    <dt>Cancha</dt>
+    <dd><%= @reserva.cancha.nombre %></dd>
+
+    <dt>Turno</dt>
+    <dd><%= @reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= @reserva.turno.hora_fin.strftime("%H:%M") %></dd>
+
+    <dt>Cliente</dt>
+    <dd><%= @reserva.user.name %> (<%= @reserva.user.email %>)</dd>
+  </dl>
+</div>
