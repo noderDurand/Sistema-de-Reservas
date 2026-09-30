@@ -1,27 +1,40 @@
-<%= form_with model: [:admin, cancha], multipart: true do |f| %>
+<%= form_with model: [:admin, cancha], multipart: true, class: "form" do |f| %>
   <% if cancha.errors.any? %>
-    <div style="color: red;">
-      <% cancha.errors.full_messages.each do |msg| %>
-        <p><%= msg %></p>
-      <% end %>
+    <div class="form-errors">
+      <strong>No se pudo guardar la cancha:</strong>
+      <ul>
+        <% cancha.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
-  <div>
+  <div class="field">
     <%= f.label :nombre %>
-    <%= f.text_field :nombre %>
+    <%= f.text_field :nombre, placeholder: "Ej: Cancha 1" %>
   </div>
-  <div>
+
+  <div class="field">
     <%= f.label :capacidad %>
-    <%= f.number_field :capacidad %>
+    <%= f.number_field :capacidad, min: 1, placeholder: "Ej: 10" %>
   </div>
-  <div>
+
+  <div class="field">
     <%= f.label :precio %>
-    <%= f.number_field :precio, step: 0.01 %>
+    <%= f.number_field :precio, step: 0.01, min: 0, placeholder: "Ej: 25000" %>
   </div>
-  <div>
-    <%= f.label :foto, "Foto de la Cancha" %>
+
+  <div class="field">
+    <%= f.label :foto, "Foto de la cancha" %>
     <%= f.file_field :foto, accept: "image/*" %>
+    <% if cancha.foto.attached? %>
+      <p class="hint">Ya tiene una foto cargada. Si subís otra, se reemplaza.</p>
+    <% end %>
   </div>
-  <%= f.submit %>
+
+  <div class="form-actions">
+    <%= f.submit "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_canchas_path, class: "btn btn-secondary" %>
+  </div>
 <% end %>

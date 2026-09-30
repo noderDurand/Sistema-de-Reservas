@@ -1,19 +1,28 @@
-<%= form_with model: [:admin, turno] do |f| %>
+<%= form_with model: [:admin, turno], class: "form" do |f| %>
   <% if turno.errors.any? %>
-    <div style="color: red;">
-      <% turno.errors.full_messages.each do |msg| %>
-        <p><%= msg %></p>
-      <% end %>
+    <div class="form-errors">
+      <strong>No se pudo guardar el turno:</strong>
+      <ul>
+        <% turno.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
-  <div>
-    <%= f.label :hora_inicio %>
+  <div class="field">
+    <%= f.label :hora_inicio, "Hora de inicio" %>
     <%= f.time_field :hora_inicio %>
   </div>
-  <div>
-    <%= f.label :hora_fin %>
+
+  <div class="field">
+    <%= f.label :hora_fin, "Hora de fin" %>
     <%= f.time_field :hora_fin %>
+    <p class="hint">Tiene que ser posterior a la hora de inicio.</p>
   </div>
-  <%= f.submit %>
+
+  <div class="form-actions">
+    <%= f.submit "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_turnos_path, class: "btn btn-secondary" %>
+  </div>
 <% end %>

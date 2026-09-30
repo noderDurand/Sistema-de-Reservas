@@ -1,9 +1,31 @@
-<h1>Editar reserva #<%= @reserva.id %></h1>
+<div class="page-header">
+  <h1>Editar reserva #<%= @reserva.id %></h1>
+</div>
 
-<%= form_with model: [:admin, @reserva] do |f| %>
-  <div>
-    <%= f.label :estado %>
-    <%= f.select :estado, Reserva::ESTADOS %>
-  </div>
-  <%= f.submit %>
-<% end %>
+<div class="card card-narrow">
+  <dl class="detail-list">
+    <dt>Cancha</dt>
+    <dd><%= @reserva.cancha.nombre %></dd>
+
+    <dt>Fecha y turno</dt>
+    <dd>
+      <%= @reserva.fecha.strftime("%d/%m/%Y") %>,
+      <%= @reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= @reserva.turno.hora_fin.strftime("%H:%M") %>
+    </dd>
+
+    <dt>Cliente</dt>
+    <dd><%= @reserva.user.name %></dd>
+  </dl>
+
+  <%= form_with model: [:admin, @reserva], class: "form" do |f| %>
+    <div class="field">
+      <%= f.label :estado %>
+      <%= f.select :estado, Reserva::ESTADOS.map { |e| [e.capitalize, e] } %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Guardar", class: "btn btn-primary" %>
+      <%= link_to "Cancelar", admin_reserva_path(@reserva), class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

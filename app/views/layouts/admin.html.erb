@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Admin - Futbol5 Reservas</title>
-        <%= csrf_meta_tags %>
-        <%= csp_meta_tag %>
-        <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    </head>
-    <body>
-        <nav style="padding: 1rem; background: #222; color: white;">
-            <% if current_user %>
-              <%= link_to "Dashboard", admin_root_path, style: "color: white; margin-rigth: 1rem;" %>
-              <%= link_to "Canchas", admin_canchas_path, style: "color: white; margin-rigth: 1rem;" %>
-              <%= link_to "Turnos", admin_turnos_path, style: "color: white; margin-rigth: 1rem;" %>
-              <%= link_to "Reservas", admin_reservas_path, style: "color: white; margin-rigth: 1rem;" %>
-              <%= button_to "Cerrar Sesion", admin_logout_path, method: :delete, style: "display: inline; color: black;" %>
-            <% end %>
-        </nav>
+<html lang="es">
+  <head>
+    <title>Admin - Futbol5 Reservas</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <%= link_to "⚽ Futbol5 Admin", (current_user ? admin_root_path : admin_login_path), class: "navbar-brand" %>
 
-        <main style="padding: 2rem;">
-            <% if notice %><p style="color: green;"><%= notice %></p><% end %>
-            <% if alert %><p style="color: red;"><%= alert %></p><% end %>
-            <%= yield %>
-        </main>
-    </body>
+        <% if current_user %>
+          <div class="navbar-links">
+            <%= link_to "Dashboard", admin_root_path, class: ("active" if controller_name == "dashboard") %>
+            <%= link_to "Canchas", admin_canchas_path, class: ("active" if controller_name == "canchas") %>
+            <%= link_to "Turnos", admin_turnos_path, class: ("active" if controller_name == "turnos") %>
+            <%= link_to "Reservas", admin_reservas_path, class: ("active" if controller_name == "reservas") %>
+          </div>
+
+          <div class="navbar-user">
+            <span><%= current_user.name %></span>
+            <%= button_to "Cerrar sesión", admin_logout_path, method: :delete, class: "btn btn-light btn-sm" %>
+          </div>
+        <% end %>
+      </div>
+    </nav>
+
+    <main class="container">
+      <% if notice %><div class="flash flash-notice"><%= notice %></div><% end %>
+      <% if alert %><div class="flash flash-alert"><%= alert %></div><% end %>
+      <%= yield %>
+    </main>
+  </body>
 </html>

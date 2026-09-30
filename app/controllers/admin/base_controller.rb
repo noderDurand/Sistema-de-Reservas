@@ -5,7 +5,7 @@ class Admin::BaseController < ApplicationController
     private_class_method
 
     def require_admin
-      unless current_user&.role = "admin"
+      unless current_user&.role == "admin"
         redirect_to admin_login_path, alert: "Necesitas iniciar sesion como adminitrador"
       end
     end

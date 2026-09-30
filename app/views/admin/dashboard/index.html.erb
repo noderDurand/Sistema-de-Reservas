@@ -1,2 +1,22 @@
-<h1>Panel de Administracion</h1>
-<p>Bienvenido/a, <%= current_user.name %>.</p>
+<div class="page-header">
+  <h1>Panel de Administración</h1>
+</div>
+
+<p>Bienvenido/a, <strong><%= current_user.name %></strong>.</p>
+
+<div class="dashboard-grid">
+  <%= link_to admin_canchas_path, class: "card dashboard-card" do %>
+    <h2>Canchas</h2>
+    <p>Alta, edición y fotos de las canchas del complejo.</p>
+  <% end %>
+
+  <%= link_to admin_turnos_path, class: "card dashboard-card" do %>
+    <h2>Turnos</h2>
+    <p>Franjas horarias disponibles para reservar.</p>
+  <% end %>
+
+  <%= link_to admin_reservas_path, class: "card dashboard-card" do %>
+    <h2>Reservas</h2>
+    <p>Reservas de los clientes y cambio de estado.</p>
+  <% end %>
+</div>
