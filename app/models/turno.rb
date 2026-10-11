@@ -6,6 +6,11 @@ class Turno < ApplicationRecord
   validate :hora_fin_posterior_inicio
   validate :no_se_superpone_con_otro_turno
 
+  def empezado_en?(fecha)
+    fecha == Date.current &&
+      hora_inicio.seconds_since_midnight <= Time.current.seconds_since_midnight
+  end
+
   private
 
   def hora_fin_posterior_inicio

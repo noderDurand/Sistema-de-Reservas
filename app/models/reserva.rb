@@ -26,8 +26,7 @@ class Reserva < ApplicationRecord
 
     if fecha < Date.current
       errors.add(:fecha, "no puede ser una fecha pasada")
-    elsif fecha == Date.current && turno&.hora_inicio.present? &&
-          turno.hora_inicio.seconds_since_midnight <= Time.current.seconds_since_midnight
+    elsif turno&.hora_inicio.present? && turno.empezado_en?(fecha)
       errors.add(:turno, "ya comenzó, elegí un horario posterior")
     end
   end
