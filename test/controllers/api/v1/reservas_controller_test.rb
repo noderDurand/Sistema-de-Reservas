@@ -14,6 +14,35 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
   test "index sin token devuelve 401" do
     get api_v1_reservas_url
     assert_response :unauthorized
+    assert_equal [ "No autorizado" ], response.parsed_body["errors"]
+  end
+
+  # --- formato de errores: siempre JSON { errors: [...] } ---
+
+  test "show de una reserva ajena devuelve 404 en formato errors" do
+    otro = { "Authorization" => "Bearer #{users(:two).api_token}" }
+
+    get api_v1_reserva_url(reservas(:one)), headers: otro
+
+    assert_response :not_found
+    assert_equal [ "Recurso no encontrado" ], response.parsed_body["errors"]
+  end
+
+  test "create sin la clave reserva devuelve 400 en JSON" do
+    post api_v1_reservas_url, params: { cancha_id: canchas(:one).id }, headers: @headers
+
+    assert_response :bad_request
+    assert_equal "application/json", response.media_type
+    assert_equal [ "Falta el parámetro 'reserva'" ], response.parsed_body["errors"]
+  end
+
+  test "create con JSON mal armado devuelve 400 en JSON" do
+    post api_v1_reservas_url, params: '{"reserva": ',
+      headers: @headers.merge("Content-Type" => "application/json")
+
+    assert_response :bad_request
+    assert_equal "application/json", response.media_type
+    assert_equal [ "El cuerpo de la petición no es un JSON válido" ], response.parsed_body["errors"]
   end
 
   test "should get show" do

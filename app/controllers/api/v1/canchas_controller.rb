@@ -12,16 +12,16 @@ class Api::V1::CanchasController < Api::V1::BaseController
     cancha = Cancha.find(params[:id])
 
     if params[:fecha].blank?
-      return render json: { error: "debes indicar una fecha (?fecha=YYYY-MM-DD)" }, status: :bad_request
+      return render_errors("Debes indicar una fecha (?fecha=YYYY-MM-DD)", :bad_request)
     end
 
     fecha = parsear_fecha(params[:fecha])
     if fecha.nil?
-      return render json: { error: "fecha inválida, el formato es YYYY-MM-DD" }, status: :bad_request
+      return render_errors("Fecha inválida, el formato es YYYY-MM-DD", :bad_request)
     end
 
     if fecha < Date.current
-      return render json: { error: "no se puede consultar una fecha pasada" }, status: :unprocessable_entity
+      return render_errors("No se puede consultar una fecha pasada", :unprocessable_entity)
     end
 
     ocupados_ids = Reserva.where(cancha: cancha, fecha: fecha).where.not(estado: "cancelada").pluck(:turno_id)

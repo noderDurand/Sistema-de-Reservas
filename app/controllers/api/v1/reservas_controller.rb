@@ -6,8 +6,6 @@ class Api::V1::ReservasController < Api::V1::BaseController
   def show
     reserva = current_api_user.reservas.find(params[:id])
     render json: reserva
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: "Reserva no encontrada" }, status: :not_found
   end
 
   def create
@@ -16,7 +14,7 @@ class Api::V1::ReservasController < Api::V1::BaseController
       ReservaMailer.confirmation(reserva).deliver_later
       render json: reserva, status: :created
     else
-      render json: { errors: reserva.errors.full_messages }, status: :unprocessable_entity
+      render_errors(reserva.errors.full_messages, :unprocessable_entity)
     end
   end
 
@@ -27,7 +25,7 @@ class Api::V1::ReservasController < Api::V1::BaseController
     if reserva.cancelar
       render json: reserva
     else
-      render json: { errors: reserva.errors.full_messages }, status: :unprocessable_entity
+      render_errors(reserva.errors.full_messages, :unprocessable_entity)
     end
   end
 
