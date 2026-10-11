@@ -42,7 +42,7 @@ class Api::V1::CanchasControllerTest < ActionDispatch::IntegrationTest
     get turnos_disponibles_api_v1_cancha_url(canchas(:one)), params: { fecha: "2026-02-30" }
 
     assert_response :bad_request
-    assert_equal "fecha inválida, el formato es YYYY-MM-DD", response.parsed_body["error"]
+    assert_equal [ "Fecha inválida, el formato es YYYY-MM-DD" ], response.parsed_body["errors"]
   end
 
   test "turnos_disponibles con fecha pasada devuelve 422" do

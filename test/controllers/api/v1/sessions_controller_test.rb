@@ -20,7 +20,7 @@ class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
     post api_v1_login_url, params: { email: @user.email, password: "incorrecta" }
 
     assert_response :unauthorized
-    assert_equal "Email o contraseña incorrectos", response.parsed_body["error"]
+    assert_equal [ "Email o contraseña incorrectos" ], response.parsed_body["errors"]
   end
 
   # --- signup ---

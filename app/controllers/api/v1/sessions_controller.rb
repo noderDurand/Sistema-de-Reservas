@@ -10,7 +10,7 @@ class Api::V1::SessionsController < Api::V1::BaseController
         user: { id: user.id, name: user.name, email: user.email, role: user.role }
       }, status: :ok
     else
-      render json: { error: "Email o contraseña incorrectos" }, status: :unauthorized
+      render_errors("Email o contraseña incorrectos", :unauthorized)
     end
   end
 
@@ -24,7 +24,7 @@ class Api::V1::SessionsController < Api::V1::BaseController
         user: { id: user.id, name: user.name, email: user.email, role: user.role }
       }, status: :created
     else
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      render_errors(user.errors.full_messages, :unprocessable_entity)
     end
   end
 
