@@ -1,14 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fechas relativas a hoy: con fechas fijas, al pasar el tiempo los tests de
+# "reserva duplicada" fallarían por fecha pasada y no por el duplicado.
 
 one:
-  fecha: 2026-09-20
+  fecha: <%= Date.current + 7 %>
   estado: pendiente
   cancha: one
   turno: one
   user: one
 
 two:
-  fecha: 2026-09-21
+  fecha: <%= Date.current + 8 %>
   estado: confirmada
   cancha: two
   turno: two

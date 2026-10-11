@@ -48,5 +48,23 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
       headers: @headers
 
     assert_response :unprocessable_entity
+    assert_includes response.parsed_body["errors"], "Cancha ya esta reservada en ese horario"
+  end
+
+  test "no permite crear una reserva en una fecha pasada" do
+    assert_no_difference("Reserva.count") do
+      post api_v1_reservas_url,
+        params: {
+          reserva: {
+            cancha_id: canchas(:one).id,
+            turno_id: turnos(:one).id,
+            fecha: Date.yesterday
+          }
+        },
+        headers: @headers
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.parsed_body["errors"], "Fecha no puede ser una fecha pasada"
   end
 end

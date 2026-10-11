@@ -13,6 +13,22 @@ class Reserva < ApplicationRecord
     conditions: -> { where.not(estado: "cancelada") },
     message: "ya esta reservada en ese horario"
   }
+  # Solo al crear: el admin tiene que poder cambiar el estado de reservas
+  # viejas (ej. cancelar o confirmar una de ayer) sin que esto lo bloquee.
+  validate :fecha_y_turno_no_pasados, on: :create
 
   before_validation { self.estado ||= "pendiente" }
+
+  private
+
+  def fecha_y_turno_no_pasados
+    return if fecha.blank?
+
+    if fecha < Date.current
+      errors.add(:fecha, "no puede ser una fecha pasada")
+    elsif fecha == Date.current && turno&.hora_inicio.present? &&
+          turno.hora_inicio.seconds_since_midnight <= Time.current.seconds_since_midnight
+      errors.add(:turno, "ya comenzó, elegí un horario posterior")
+    end
+  end
 end
