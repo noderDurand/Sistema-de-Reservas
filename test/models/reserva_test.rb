@@ -93,4 +93,39 @@ class ReservaTest < ActiveSupport::TestCase
 
     assert reserva.update(estado: "cancelada")
   end
+
+  # --- cancelar ---
+
+  test "cancelar cambia el estado a cancelada" do
+    reserva = reservas(:one)
+
+    assert reserva.cancelar
+    assert_equal "cancelada", reserva.reload.estado
+  end
+
+  test "no se puede cancelar dos veces" do
+    reserva = reservas(:one)
+    reserva.update!(estado: "cancelada")
+
+    assert_not reserva.cancelar
+    assert_includes reserva.errors[:base], "La reserva ya está cancelada"
+  end
+
+  test "no se puede cancelar una reserva de hoy cuyo turno ya empezó" do
+    travel_to Time.zone.local(2026, 10, 11, 18, 30) do
+      reserva = reservas(:one)
+      reserva.update_column(:fecha, Date.current)
+
+      assert_not reserva.cancelar
+      assert_equal "pendiente", reserva.reload.estado
+    end
+  end
+
+  test "cancelar libera el horario para otra reserva" do
+    reservas(:one).cancelar
+
+    nueva = Reserva.new(fecha: reservas(:one).fecha, cancha: reservas(:one).cancha,
+                        turno: reservas(:one).turno, user: users(:two))
+    assert nueva.valid?
+  end
 end

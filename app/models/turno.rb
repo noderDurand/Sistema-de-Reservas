@@ -11,6 +11,16 @@ class Turno < ApplicationRecord
       hora_inicio.seconds_since_midnight <= Time.current.seconds_since_midnight
   end
 
+  # En la API las horas salen como "HH:MM". Por default saldrían como
+  # "2000-01-01T18:00:00.000Z": la Z (UTC) hace que el front, al parsearlo
+  # con new Date(), lo muestre corrido 3 horas.
+  def as_json(options = {})
+    super(options).merge(
+      "hora_inicio" => hora_inicio&.strftime("%H:%M"),
+      "hora_fin" => hora_fin&.strftime("%H:%M")
+    )
+  end
+
   private
 
   def hora_fin_posterior_inicio

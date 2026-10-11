@@ -23,7 +23,11 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :reservas, only: [ :index, :show, :create ]
+      resources :reservas, only: [ :index, :show, :create ] do
+        member do
+          patch :cancelar
+        end
+      end
 
       get "profile", to: "profiles#show"
     end

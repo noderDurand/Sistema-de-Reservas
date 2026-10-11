@@ -45,4 +45,11 @@ class TurnoTest < ActiveSupport::TestCase
     turno.hora_fin = "18:50"
     assert turno.valid?
   end
+
+  test "as_json devuelve las horas como HH:MM" do
+    json = turnos(:one).as_json
+
+    assert_equal "18:00", json["hora_inicio"]
+    assert_equal "19:00", json["hora_fin"]
+  end
 end

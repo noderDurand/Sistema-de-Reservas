@@ -67,4 +67,58 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_includes response.parsed_body["errors"], "Fecha no puede ser una fecha pasada"
   end
+
+  # --- JSON ---
+
+  test "index devuelve nombre de cancha y horario del turno" do
+    get api_v1_reservas_url, headers: @headers
+
+    reserva = response.parsed_body.find { |r| r["id"] == reservas(:one).id }
+    assert_equal canchas(:one).nombre, reserva["cancha"]["nombre"]
+    assert_equal "18:00", reserva["turno"]["hora_inicio"]
+    assert_equal "19:00", reserva["turno"]["hora_fin"]
+    assert_nil reserva["user_id"]
+  end
+
+  # --- cancelar ---
+
+  test "cancelar una reserva propia la deja cancelada" do
+    patch cancelar_api_v1_reserva_url(reservas(:one)), headers: @headers
+
+    assert_response :success
+    assert_equal "cancelada", response.parsed_body["estado"]
+    assert_equal "cancelada", reservas(:one).reload.estado
+  end
+
+  test "cancelar una reserva ya cancelada devuelve 422" do
+    reservas(:one).update!(estado: "cancelada")
+
+    patch cancelar_api_v1_reserva_url(reservas(:one)), headers: @headers
+
+    assert_response :unprocessable_entity
+    assert_includes response.parsed_body["errors"], "La reserva ya está cancelada"
+  end
+
+  test "cancelar una reserva pasada devuelve 422" do
+    reservas(:one).update_column(:fecha, Date.yesterday)
+
+    patch cancelar_api_v1_reserva_url(reservas(:one)), headers: @headers
+
+    assert_response :unprocessable_entity
+    assert_equal "pendiente", reservas(:one).reload.estado
+  end
+
+  test "no se puede cancelar la reserva de otro usuario" do
+    otro = { "Authorization" => "Bearer #{users(:two).api_token}" }
+
+    patch cancelar_api_v1_reserva_url(reservas(:one)), headers: otro
+
+    assert_response :not_found
+    assert_equal "pendiente", reservas(:one).reload.estado
+  end
+
+  test "cancelar sin token devuelve 401" do
+    patch cancelar_api_v1_reserva_url(reservas(:one))
+    assert_response :unauthorized
+  end
 end
