@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post "login", to: "sessions#create"
       post "signup", to: "sessions#signup"
+      delete "logout", to: "sessions#destroy"
 
       resources :canchas, only: [ :index, :show ] do
         member do
