@@ -44,4 +44,53 @@ class ReservaTest < ActiveSupport::TestCase
 
     assert otra_fecha.valid?
   end
+
+  # --- fechas y turnos pasados (turno one = 18:00-19:00, two = 19:00-20:00) ---
+
+  test "no permite reservar una fecha pasada" do
+    reserva = Reserva.new(fecha: Date.yesterday, cancha: canchas(:one),
+                          turno: turnos(:one), user: users(:one))
+
+    assert_not reserva.valid?
+    assert_includes reserva.errors[:fecha], "no puede ser una fecha pasada"
+  end
+
+  test "no permite reservar hoy un turno que ya empezó" do
+    travel_to Time.zone.local(2026, 10, 11, 18, 30) do
+      reserva = Reserva.new(fecha: Date.current, cancha: canchas(:one),
+                            turno: turnos(:one), user: users(:one))
+
+      assert_not reserva.valid?
+      assert_includes reserva.errors[:turno], "ya comenzó, elegí un horario posterior"
+    end
+  end
+
+  test "permite reservar hoy un turno que todavía no empezó" do
+    travel_to Time.zone.local(2026, 10, 11, 18, 30) do
+      reserva = Reserva.new(fecha: Date.current, cancha: canchas(:one),
+                            turno: turnos(:two), user: users(:one))
+
+      assert reserva.valid?
+    end
+  end
+
+  test "usa la hora de Argentina: a las 22hs todavía es el mismo día" do
+    # 22:00 en Buenos Aires = 01:00 UTC del día siguiente
+    travel_to Time.zone.local(2026, 10, 11, 22, 0) do
+      reserva = Reserva.new(fecha: Date.new(2026, 10, 11), cancha: canchas(:one),
+                            turno: turnos(:one), user: users(:one))
+
+      reserva.valid?
+      # Si se usara UTC, ya sería 12/10 y daría "fecha pasada" en vez de esto
+      assert_empty reserva.errors[:fecha]
+      assert_includes reserva.errors[:turno], "ya comenzó, elegí un horario posterior"
+    end
+  end
+
+  test "el admin puede cambiar el estado de una reserva con fecha pasada" do
+    reserva = reservas(:one)
+    reserva.update_column(:fecha, Date.yesterday)
+
+    assert reserva.update(estado: "cancelada")
+  end
 end
