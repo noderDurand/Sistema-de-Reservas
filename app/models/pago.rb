@@ -23,6 +23,12 @@ class Pago < ApplicationRecord
   def aprobar
     return true if aprobado?
 
+    if reserva.vencida?
+      Reserva.expirar_vencidas
+      errors.add(:base, "La reserva venció por falta de pago, volvé a reservar")
+      return false
+    end
+
     if reserva.estado == "cancelada"
       errors.add(:base, "La reserva está cancelada, no se puede pagar")
       return false

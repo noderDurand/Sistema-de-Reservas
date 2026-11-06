@@ -31,4 +31,14 @@ class PagosControllerTest < ActionDispatch::IntegrationTest
     get pago_publico_url(token: "no-existe")
     assert_response :not_found
   end
+
+  test "escanear un QR vencido no aprueba el pago y muestra el motivo" do
+    travel_to pagos(:two).reserva.created_at + 16.minutes do
+      get pago_publico_url(token: pagos(:two).token)
+    end
+
+    assert_includes response.body, "venció por falta de pago"
+    assert_equal "pendiente", pagos(:two).reload.estado
+    assert_equal "cancelada", reservas(:two).reload.estado
+  end
 end

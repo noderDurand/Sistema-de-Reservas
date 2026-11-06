@@ -138,4 +138,55 @@ class ReservaTest < ActiveSupport::TestCase
                         turno: reservas(:one).turno, user: users(:two))
     assert nueva.valid?
   end
+
+  # --- vencimiento por falta de pago ---
+
+  test "una reserva pendiente vence a los 15 minutos" do
+    reserva = reservas(:two)
+
+    assert_not reserva.vencida?
+    travel_to reserva.created_at + 16.minutes do
+      assert reserva.vencida?
+      assert_equal reserva.created_at + 15.minutes, reserva.vence_en
+    end
+  end
+
+  test "una reserva confirmada no vence" do
+    reserva = reservas(:one)
+
+    assert_nil reserva.vence_en
+    travel_to reserva.created_at + 1.day do
+      assert_not reserva.vencida?
+    end
+  end
+
+  test "expirar_vencidas cancela solo las pendientes fuera de plazo y libera el horario" do
+    pendiente = reservas(:two)
+    confirmada = reservas(:one)
+
+    travel_to pendiente.created_at + 10.minutes do
+      Reserva.expirar_vencidas
+      assert_equal "pendiente", pendiente.reload.estado
+    end
+
+    travel_to pendiente.created_at + 16.minutes do
+      Reserva.expirar_vencidas
+      assert_equal "cancelada", pendiente.reload.estado
+      assert_equal "confirmada", confirmada.reload.estado
+
+      nueva = Reserva.new(fecha: pendiente.fecha, cancha: pendiente.cancha,
+                          turno: pendiente.turno, user: users(:one))
+      assert nueva.valid?
+    end
+  end
+
+  test "el job de expiración cancela las reservas vencidas" do
+    pendiente = reservas(:two)
+
+    travel_to pendiente.created_at + 16.minutes do
+      ExpirarReservasJob.perform_now
+    end
+
+    assert_equal "cancelada", pendiente.reload.estado
+  end
 end

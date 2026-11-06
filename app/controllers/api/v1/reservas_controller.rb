@@ -9,6 +9,7 @@ class Api::V1::ReservasController < Api::V1::BaseController
   end
 
   def create
+    Reserva.expirar_vencidas # libera horarios cuyo plazo de pago ya pasó
     reserva = current_api_user.reservas.new(reserva_params)
     if reserva.save
       render json: reserva.as_json(con_qr: true, base_url: pago_base_url), status: :created

@@ -75,4 +75,25 @@ class PagoTest < ActiveSupport::TestCase
     assert_equal "pendiente", pago.reload.estado
     assert_includes pago.errors[:base], "La reserva está cancelada, no se puede pagar"
   end
+
+  test "no se puede aprobar el pago de una reserva vencida: se cancela y libera" do
+    pago = pagos(:two)
+
+    travel_to pago.reserva.created_at + 16.minutes do
+      assert_not pago.aprobar
+      assert_includes pago.errors[:base], "La reserva venció por falta de pago, volvé a reservar"
+    end
+
+    assert_equal "pendiente", pago.reload.estado
+    assert_equal "cancelada", pago.reserva.reload.estado
+  end
+
+  test "se puede aprobar dentro del plazo" do
+    pago = pagos(:two)
+
+    travel_to pago.reserva.created_at + 14.minutes do
+      assert pago.aprobar
+    end
+    assert_equal "confirmada", pago.reserva.reload.estado
+  end
 end

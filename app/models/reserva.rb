@@ -5,6 +5,8 @@ class Reserva < ApplicationRecord
   has_one :pago, dependent: :destroy
 
   ESTADOS = %w[pendiente confirmada cancelada].freeze
+  # Tiempo para pagar una reserva pendiente; pasado esto se cancela sola.
+  MINUTOS_PARA_PAGAR = 15
 
   validates :fecha, presence: true
   validates :estado, inclusion: { in: ESTADOS }
@@ -26,6 +28,25 @@ class Reserva < ApplicationRecord
   # Va en after_create: corre en la misma transacción que el save, o se
   # guardan las dos cosas o ninguna.
   after_create :generar_pago_pendiente
+
+  # Cancela todas las reservas pendientes que pasaron el plazo de pago y así
+  # libera el horario. La llama el job recurrente (producción) y también la
+  # API justo antes de mirar disponibilidad o reservar, para que el resultado
+  # sea exacto aunque el job no haya corrido todavía (en desarrollo no corre).
+  def self.expirar_vencidas
+    vencidas.update_all(estado: "cancelada", updated_at: Time.current)
+  end
+
+  scope :vencidas, -> { where(estado: "pendiente").where(created_at: ...MINUTOS_PARA_PAGAR.minutes.ago) }
+
+  # Momento en que se cancela por falta de pago (solo mientras está pendiente).
+  def vence_en
+    created_at + MINUTOS_PARA_PAGAR.minutes if estado == "pendiente"
+  end
+
+  def vencida?
+    vence_en.present? && vence_en <= Time.current
+  end
 
   # true si la reserva es de un día anterior o de un turno de hoy que ya empezó
   def pasada?
@@ -56,6 +77,7 @@ class Reserva < ApplicationRecord
     super({ only: [ :id, :fecha, :estado, :created_at ] }.merge(options)).merge(
       "cancha" => { "id" => cancha.id, "nombre" => cancha.nombre, "precio" => cancha.precio },
       "turno" => turno.as_json(only: [ :id ]),
+      "vence_en" => vence_en,
       "pago" => pago&.as_json(options.slice(:con_qr, :base_url))
     )
   end

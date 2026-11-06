@@ -58,7 +58,8 @@ Base: `/api/v1`
   a Cancha, Turno y User. No permite dos reservas activas para la misma
   cancha+turno+fecha (validación + índice único parcial en la base). Si el
   horario está libre nace `pendiente` (ya lo ocupa) y pasa a `confirmada`
-  sola cuando se paga, sin aprobación del admin.
+  sola cuando se paga, sin aprobación del admin. Si no se paga en 15 minutos
+  se cancela y libera el horario.
 - **Pago**: fecha, precio, modo (efectivo/online), estado (pendiente/aprobado),
   token. Pertenece a Reserva (uno por reserva).
 
@@ -71,7 +72,12 @@ Base: `/api/v1`
 2. Al escanear el QR el celular abre `GET /pagos/:token` (público) y el pago
    pasa a `aprobado` y la reserva a `confirmada`; se manda el mail de
    confirmación (es una simulación, no hay pasarela real).
-3. El front consulta `GET /reservas` / `GET /reservas/:id` y ve `pago.estado` y `estado`.
+3. Si pasan 15 minutos sin pago (`Reserva::MINUTOS_PARA_PAGAR`) la reserva se
+   cancela sola y el horario queda libre. La reserva pendiente trae `vence_en`
+   (ISO 8601) para mostrar una cuenta regresiva. Se aplica al vuelo al
+   reservar, al consultar turnos disponibles y al escanear el QR, y además lo
+   limpia `ExpirarReservasJob` cada minuto en producción (`config/recurring.yml`).
+4. El front consulta `GET /reservas` / `GET /reservas/:id` y ve `pago.estado` y `estado`.
 
 Para que el celular alcance el servidor, en desarrollo setear la IP de la PC:
 `PUBLIC_BASE_URL=http://192.168.0.10:3000 bin/rails server -b 0.0.0.0`

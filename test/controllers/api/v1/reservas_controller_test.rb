@@ -207,4 +207,29 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
     assert_includes estados, "aprobado"
     assert_includes estados, "pendiente"
   end
+
+  test "una reserva pendiente informa cuándo vence" do
+    get api_v1_reserva_url(reservas(:two)), headers: @headers
+
+    assert_equal (reservas(:two).created_at + 15.minutes).as_json, response.parsed_body["vence_en"]
+  end
+
+  test "una reserva confirmada no tiene vencimiento" do
+    get api_v1_reserva_url(reservas(:one)), headers: @headers
+
+    assert_nil response.parsed_body["vence_en"]
+  end
+
+  test "un horario con reserva vencida sin pagar se puede volver a reservar" do
+    vieja = reservas(:two)
+
+    travel_to vieja.created_at + 16.minutes do
+      assert_difference "Reserva.count", 1 do
+        post api_v1_reservas_url, headers: @headers, as: :json,
+             params: { reserva: { cancha_id: vieja.cancha_id, turno_id: vieja.turno_id, fecha: vieja.fecha } }
+      end
+      assert_response :created
+    end
+    assert_equal "cancelada", vieja.reload.estado
+  end
 end

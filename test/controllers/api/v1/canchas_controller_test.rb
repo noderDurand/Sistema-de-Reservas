@@ -54,4 +54,17 @@ class Api::V1::CanchasControllerTest < ActionDispatch::IntegrationTest
     get turnos_disponibles_api_v1_cancha_url(id: 999_999), params: { fecha: Date.tomorrow.to_s }
     assert_response :not_found
   end
+
+  test "turnos_disponibles libera el turno de una reserva vencida sin pagar" do
+    reserva = reservas(:two)
+    url = turnos_disponibles_api_v1_cancha_url(reserva.cancha, fecha: reserva.fecha)
+
+    get url
+    assert_not_includes response.parsed_body.map { |t| t["id"] }, reserva.turno_id
+
+    travel_to reserva.created_at + 16.minutes do
+      get url
+      assert_includes response.parsed_body.map { |t| t["id"] }, reserva.turno_id
+    end
+  end
 end
