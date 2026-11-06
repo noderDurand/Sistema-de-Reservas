@@ -22,5 +22,18 @@
 
     <dt>Cliente</dt>
     <dd><%= @reserva.user.name %> (<%= @reserva.user.email %>)</dd>
+
+    <dt>Pago</dt>
+    <dd>
+      <% if @reserva.pago %>
+        <span class="badge badge-<%= @reserva.pago.estado == "aprobado" ? "confirmada" : "pendiente" %>"><%= @reserva.pago.estado %></span>
+        $<%= number_with_precision(@reserva.pago.precio, precision: 0, delimiter: ".") %> (<%= @reserva.pago.modo %>)
+        <% if @reserva.pago.fecha %>
+          — <%= @reserva.pago.fecha.strftime("%d/%m/%Y %H:%M") %>
+        <% end %>
+      <% else %>
+        Sin pago registrado
+      <% end %>
+    </dd>
   </dl>
 </div>

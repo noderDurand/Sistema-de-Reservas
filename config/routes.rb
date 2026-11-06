@@ -11,6 +11,10 @@ Rails.application.routes.draw do
     resources :reservas, only: [ :index, :show, :edit, :update ]
   end
 
+  # Destino del QR: público (lo abre el celular, sin token). Al abrirlo el
+  # pago simulado queda aprobado.
+  get "pagos/:token", to: "pagos#show", as: :pago_publico
+
   namespace :api do
     namespace :v1 do
       post "login", to: "sessions#create"

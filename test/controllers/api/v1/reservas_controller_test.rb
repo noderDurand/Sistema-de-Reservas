@@ -150,4 +150,61 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
     patch cancelar_api_v1_reserva_url(reservas(:one))
     assert_response :unauthorized
   end
+
+  # --- confirmación automática y pago con QR ---
+
+  test "crear una reserva libre la deja confirmada con pago pendiente y QR" do
+    assert_difference [ "Reserva.count", "Pago.count" ], 1 do
+      post api_v1_reservas_url, headers: @headers, as: :json,
+           params: { reserva: { cancha_id: canchas(:one).id, turno_id: turnos(:two).id, fecha: Date.current + 20 } }
+    end
+
+    assert_response :created
+    body = response.parsed_body
+    assert_equal "confirmada", body["estado"]
+    assert_equal "pendiente", body["pago"]["estado"]
+    assert body["pago"]["pago_url"].end_with?("/pagos/#{Pago.last.token}")
+    assert_includes body["pago"]["qr_svg"], "<svg"
+  end
+
+  test "reservar un horario ocupado sigue dando 422" do
+    reserva = reservas(:two)
+    post api_v1_reservas_url, headers: @headers, as: :json,
+         params: { reserva: { cancha_id: reserva.cancha_id, turno_id: reserva.turno_id, fecha: reserva.fecha } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "el índice único de la base frena un doble booking que esquiva la validación" do
+    reserva = reservas(:two)
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      Reserva.new(cancha: reserva.cancha, turno: reserva.turno, fecha: reserva.fecha,
+                  user: users(:one), estado: "confirmada").save(validate: false)
+    end
+  end
+
+  test "show de una reserva con pago pendiente incluye el QR" do
+    get api_v1_reserva_url(reservas(:two)), headers: @headers
+
+    assert_response :success
+    assert_equal "pendiente", response.parsed_body["pago"]["estado"]
+    assert_includes response.parsed_body["pago"]["qr_svg"], "<svg"
+  end
+
+  test "con el pago aprobado la reserva muestra el pago sin QR" do
+    pagos(:two).aprobar
+
+    get api_v1_reserva_url(reservas(:two)), headers: @headers
+
+    assert_equal "aprobado", response.parsed_body["pago"]["estado"]
+    assert_nil response.parsed_body["pago"]["qr_svg"]
+  end
+
+  test "index incluye el estado del pago de cada reserva" do
+    get api_v1_reservas_url, headers: @headers
+
+    estados = response.parsed_body.map { |r| r["pago"]["estado"] }
+    assert_includes estados, "aprobado"
+    assert_includes estados, "pendiente"
+  end
 end

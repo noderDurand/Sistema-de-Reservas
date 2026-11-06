@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_123931) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -49,12 +49,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_123931) do
 
   create_table "pagos", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "estado", default: "pendiente", null: false
     t.datetime "fecha"
     t.string "modo"
     t.decimal "precio"
     t.integer "reserva_id", null: false
+    t.string "token"
     t.datetime "updated_at", null: false
-    t.index ["reserva_id"], name: "index_pagos_on_reserva_id"
+    t.index ["reserva_id"], name: "index_pagos_on_reserva_id", unique: true
+    t.index ["token"], name: "index_pagos_on_token", unique: true
   end
 
   create_table "reservas", force: :cascade do |t|
@@ -65,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_123931) do
     t.integer "turno_id", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["cancha_id", "turno_id", "fecha"], name: "index_reservas_horario_unico_activo", unique: true, where: "estado != 'cancelada'"
     t.index ["cancha_id"], name: "index_reservas_on_cancha_id"
     t.index ["turno_id"], name: "index_reservas_on_turno_id"
     t.index ["user_id"], name: "index_reservas_on_user_id"

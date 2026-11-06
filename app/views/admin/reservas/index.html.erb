@@ -11,6 +11,7 @@
         <th>Turno</th>
         <th>Cliente</th>
         <th>Estado</th>
+        <th>Pago</th>
         <th></th>
       </tr>
     </thead>
@@ -23,6 +24,13 @@
           <td><%= reserva.user.name %></td>
           <td><span class="badge badge-<%= reserva.estado %>"><%= reserva.estado %></span></td>
           <td>
+            <% if reserva.pago %>
+              <span class="badge badge-<%= reserva.pago.estado == "aprobado" ? "confirmada" : "pendiente" %>"><%= reserva.pago.estado %></span>
+            <% else %>
+              —
+            <% end %>
+          </td>
+          <td>
             <div class="actions">
               <%= link_to "Ver", admin_reserva_path(reserva), class: "btn btn-secondary btn-sm" %>
               <%= link_to "Cambiar estado", edit_admin_reserva_path(reserva), class: "btn btn-secondary btn-sm" %>
@@ -32,7 +40,7 @@
       <% end %>
 
       <% if @reservas.empty? %>
-        <tr><td colspan="6" class="empty">Todavía no hay reservas. Se crean desde la API.</td></tr>
+        <tr><td colspan="7" class="empty">Todavía no hay reservas. Se crean desde la API.</td></tr>
       <% end %>
     </tbody>
   </table>
