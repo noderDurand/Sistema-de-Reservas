@@ -11,7 +11,6 @@ class Api::V1::ReservasController < Api::V1::BaseController
   def create
     reserva = current_api_user.reservas.new(reserva_params)
     if reserva.save
-      ReservaMailer.confirmation(reserva).deliver_later
       render json: reserva.as_json(con_qr: true, base_url: pago_base_url), status: :created
     else
       render_errors(reserva.errors.full_messages, :unprocessable_entity)

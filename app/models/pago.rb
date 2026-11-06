@@ -17,8 +17,9 @@ class Pago < ApplicationRecord
     estado == "aprobado"
   end
 
-  # Pago simulado: se llama cuando alguien escanea el QR. Es idempotente
-  # (escanear dos veces no rompe nada) y no deja pagar una reserva cancelada.
+  # Pago simulado: se llama cuando alguien escanea el QR. Aprueba el pago y
+  # confirma la reserva (las dos cosas o ninguna). Es idempotente (escanear
+  # dos veces no rompe nada) y no deja pagar una reserva cancelada.
   def aprobar
     return true if aprobado?
 
@@ -27,7 +28,16 @@ class Pago < ApplicationRecord
       return false
     end
 
-    update(estado: "aprobado", fecha: Time.current)
+    transaction do
+      update!(estado: "aprobado", fecha: Time.current)
+      reserva.update!(estado: "confirmada")
+    end
+    # Recién ahora la reserva está confirmada de verdad: este es el mail.
+    ReservaMailer.confirmation(reserva).deliver_later
+    true
+  rescue ActiveRecord::RecordInvalid => e
+    errors.add(:base, e.message)
+    false
   end
 
   # URL pública que contiene el QR. base_url es el host que alcanza el celular

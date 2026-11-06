@@ -44,7 +44,7 @@ Base: `/api/v1`
 | GET | /canchas/:id/turnos_disponibles?fecha=YYYY-MM-DD | Público | Turnos libres de esa cancha/fecha |
 | GET | /reservas | Token | Reservas del usuario logueado |
 | GET | /reservas/:id | Token | Detalle de una reserva propia |
-| POST | /reservas | Token | Crea una reserva (queda confirmada y con pago pendiente + QR) |
+| POST | /reservas | Token | Crea una reserva (queda pendiente, con pago pendiente + QR) |
 | PATCH | /reservas/:id/cancelar | Token | Cancela una reserva propia |
 | GET | /profile | Token | Datos del usuario logueado |
 
@@ -57,19 +57,21 @@ Base: `/api/v1`
 - **Reserva**: fecha, estado (pendiente/confirmada/cancelada). Pertenece
   a Cancha, Turno y User. No permite dos reservas activas para la misma
   cancha+turno+fecha (validación + índice único parcial en la base). Si el
-  horario está libre nace `confirmada`, sin aprobación del admin.
+  horario está libre nace `pendiente` (ya lo ocupa) y pasa a `confirmada`
+  sola cuando se paga, sin aprobación del admin.
 - **Pago**: fecha, precio, modo (efectivo/online), estado (pendiente/aprobado),
   token. Pertenece a Reserva (uno por reserva).
 
 ## Pago simulado con QR
 
-1. `POST /api/v1/reservas` crea la reserva (`confirmada`) y su pago `pendiente`.
+1. `POST /api/v1/reservas` crea la reserva (`pendiente`) y su pago `pendiente`.
    La respuesta trae `pago: { estado, pago_url, qr_svg }` (el `qr_svg` es el
    QR listo para mostrar en el front; `GET /reservas/:id` lo devuelve igual
    mientras el pago siga pendiente).
 2. Al escanear el QR el celular abre `GET /pagos/:token` (público) y el pago
-   pasa a `aprobado` (es una simulación, no hay pasarela real).
-3. El front consulta `GET /reservas` / `GET /reservas/:id` y ve `pago.estado`.
+   pasa a `aprobado` y la reserva a `confirmada`; se manda el mail de
+   confirmación (es una simulación, no hay pasarela real).
+3. El front consulta `GET /reservas` / `GET /reservas/:id` y ve `pago.estado` y `estado`.
 
 Para que el celular alcance el servidor, en desarrollo setear la IP de la PC:
 `PUBLIC_BASE_URL=http://192.168.0.10:3000 bin/rails server -b 0.0.0.0`

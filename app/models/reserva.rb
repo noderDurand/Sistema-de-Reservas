@@ -17,9 +17,10 @@ class Reserva < ApplicationRecord
   # viejas (ej. cancelar o confirmar una de ayer) sin que esto lo bloquee.
   validate :fecha_y_turno_no_pasados, on: :create
 
-  # Sin revisión del admin: si el horario está libre (lo garantiza la
-  # validación de unicidad de arriba) la reserva nace confirmada.
-  before_validation { self.estado ||= "confirmada" }
+  # Sin revisión del admin: la reserva nace pendiente (ya ocupa el horario,
+  # por la validación de unicidad) y pasa a confirmada sola cuando se aprueba
+  # su pago (Pago#aprobar, al escanear el QR).
+  before_validation { self.estado ||= "pendiente" }
 
   # Toda reserva nueva genera su pago pendiente (el que se paga con el QR).
   # Va en after_create: corre en la misma transacción que el save, o se

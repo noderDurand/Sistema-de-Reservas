@@ -7,11 +7,11 @@ class ReservaTest < ActiveSupport::TestCase
     assert reserva.valid?
   end
 
-  test "estado por defecto es confirmada (sin revisión del admin)" do
+  test "estado por defecto es pendiente (se confirma al pagar)" do
     reserva = Reserva.new(fecha: Date.tomorrow, cancha: canchas(:one),
                            turno: turnos(:one), user: users(:one))
     reserva.valid?
-    assert_equal "confirmada", reserva.estado
+    assert_equal "pendiente", reserva.estado
   end
 
   test "al crear una reserva se genera su pago online pendiente" do
@@ -127,7 +127,7 @@ class ReservaTest < ActiveSupport::TestCase
       reserva.update_column(:fecha, Date.current)
 
       assert_not reserva.cancelar
-      assert_equal "pendiente", reserva.reload.estado
+      assert_equal "confirmada", reserva.reload.estado
     end
   end
 

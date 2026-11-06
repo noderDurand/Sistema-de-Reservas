@@ -7,6 +7,7 @@ class PagosControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Pago aprobado"
     assert_equal "aprobado", pagos(:two).reload.estado
+    assert_equal "confirmada", reservas(:two).reload.estado
   end
 
   test "escanear dos veces sigue mostrando pago aprobado" do
@@ -23,6 +24,7 @@ class PagosControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body, "No se pudo aprobar"
     assert_equal "pendiente", pagos(:two).reload.estado
+    assert_equal "cancelada", reservas(:two).reload.estado
   end
 
   test "token inexistente devuelve 404" do

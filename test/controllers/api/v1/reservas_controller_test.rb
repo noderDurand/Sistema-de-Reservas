@@ -134,7 +134,7 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
     patch cancelar_api_v1_reserva_url(reservas(:one)), headers: @headers
 
     assert_response :unprocessable_entity
-    assert_equal "pendiente", reservas(:one).reload.estado
+    assert_equal "confirmada", reservas(:one).reload.estado
   end
 
   test "no se puede cancelar la reserva de otro usuario" do
@@ -143,7 +143,7 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
     patch cancelar_api_v1_reserva_url(reservas(:one)), headers: otro
 
     assert_response :not_found
-    assert_equal "pendiente", reservas(:one).reload.estado
+    assert_equal "confirmada", reservas(:one).reload.estado
   end
 
   test "cancelar sin token devuelve 401" do
@@ -153,7 +153,7 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
 
   # --- confirmación automática y pago con QR ---
 
-  test "crear una reserva libre la deja confirmada con pago pendiente y QR" do
+  test "crear una reserva libre la deja pendiente de pago y devuelve el QR" do
     assert_difference [ "Reserva.count", "Pago.count" ], 1 do
       post api_v1_reservas_url, headers: @headers, as: :json,
            params: { reserva: { cancha_id: canchas(:one).id, turno_id: turnos(:two).id, fecha: Date.current + 20 } }
@@ -161,7 +161,7 @@ class Api::V1::ReservasControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :created
     body = response.parsed_body
-    assert_equal "confirmada", body["estado"]
+    assert_equal "pendiente", body["estado"]
     assert_equal "pendiente", body["pago"]["estado"]
     assert body["pago"]["pago_url"].end_with?("/pagos/#{Pago.last.token}")
     assert_includes body["pago"]["qr_svg"], "<svg"

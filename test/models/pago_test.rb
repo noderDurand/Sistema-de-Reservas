@@ -1,6 +1,8 @@
 require "test_helper"
 
 class PagoTest < ActiveSupport::TestCase
+  include ActionMailer::TestHelper
+
   test "es válido con datos correctos" do
     pago = Pago.new(fecha: Time.current, precio: 5000, modo: "efectivo", reserva: reservas(:one))
     assert pago.valid?
@@ -37,12 +39,23 @@ class PagoTest < ActiveSupport::TestCase
     end
   end
 
-  test "aprobar pasa el pago a aprobado y guarda la fecha" do
+  test "aprobar pasa el pago a aprobado, guarda la fecha y confirma la reserva" do
     pago = pagos(:two)
+    assert_equal "pendiente", pago.reserva.estado
 
     assert pago.aprobar
     assert_equal "aprobado", pago.reload.estado
     assert pago.fecha.present?
+    assert_equal "confirmada", pago.reserva.reload.estado
+  end
+
+  test "aprobar manda el mail de confirmación una sola vez" do
+    pago = pagos(:two)
+
+    assert_enqueued_emails 1 do
+      pago.aprobar
+      pago.aprobar
+    end
   end
 
   test "aprobar es idempotente" do

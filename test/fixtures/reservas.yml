@@ -2,16 +2,18 @@
 # Fechas relativas a hoy: con fechas fijas, al pasar el tiempo los tests de
 # "reserva duplicada" fallarían por fecha pasada y no por el duplicado.
 
+# Estados coherentes con el pago: one tiene el pago aprobado (confirmada),
+# two tiene el pago pendiente (pendiente).
 one:
   fecha: <%= Date.current + 7 %>
-  estado: pendiente
+  estado: confirmada
   cancha: one
   turno: one
   user: one
 
 two:
   fecha: <%= Date.current + 8 %>
-  estado: confirmada
+  estado: pendiente
   cancha: two
   turno: two
   user: one
