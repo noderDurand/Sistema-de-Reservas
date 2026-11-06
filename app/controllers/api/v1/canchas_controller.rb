@@ -24,6 +24,7 @@ class Api::V1::CanchasController < Api::V1::BaseController
       return render_errors("No se puede consultar una fecha pasada", :unprocessable_entity)
     end
 
+    Reserva.expirar_vencidas # que no figuren ocupados horarios sin pagar vencidos
     ocupados_ids = Reserva.where(cancha: cancha, fecha: fecha).where.not(estado: "cancelada").pluck(:turno_id)
     disponibles = Turno.where.not(id: ocupados_ids).order(:hora_inicio).reject { |turno| turno.empezado_en?(fecha) }
 

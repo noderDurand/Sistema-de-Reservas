@@ -4,10 +4,16 @@ one:
   fecha: 2026-09-20 10:00:00
   precio: 5000
   modo: efectivo
+  estado: aprobado
+  token: token-pago-uno
   reserva: one
 
+# Pago online todavía sin escanear (sin fecha). Los fixtures se insertan
+# directo en la base y se saltean has_secure_token, por eso el token va a mano.
 two:
-  fecha: 2026-09-21 10:00:00
+  fecha:
   precio: 7000
   modo: online
+  estado: pendiente
+  token: token-pago-dos
   reserva: two

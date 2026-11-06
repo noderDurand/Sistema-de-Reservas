@@ -2,7 +2,7 @@ class Admin::ReservasController < Admin::BaseController
   before_action :set_reserva, only: [ :show, :edit, :update ]
 
   def index
-    @reservas = Reserva.includes(:cancha, :turno, :user).order(fecha: :desc)
+    @reservas = Reserva.includes(:cancha, :turno, :user, :pago).order(fecha: :desc)
   end
 
   def show

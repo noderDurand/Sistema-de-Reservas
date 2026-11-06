@@ -67,3 +67,5 @@ group :test do
 end
 
 gem "rack-cors", "~> 3.0"
+
+gem "rqrcode", "~> 3.0"

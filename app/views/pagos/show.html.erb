@@ -1,0 +1,18 @@
+<% reserva = @pago.reserva %>
+<main style="font-family: system-ui, sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem; text-align: center;">
+  <% if @aprobado %>
+    <div style="font-size: 4rem; color: #16a34a;">✔</div>
+    <h1>¡Pago aprobado!</h1>
+    <p>Pago simulado de <strong>$<%= number_with_precision(@pago.precio, precision: 0, delimiter: ".") %></strong></p>
+  <% else %>
+    <div style="font-size: 4rem; color: #dc2626;">✖</div>
+    <h1>No se pudo aprobar el pago</h1>
+    <p><%= @pago.errors.full_messages.to_sentence %></p>
+  <% end %>
+
+  <p style="color: #555;">
+    <%= reserva.cancha.nombre %><br>
+    <%= reserva.fecha.strftime("%d/%m/%Y") %>,
+    <%= reserva.turno.hora_inicio.strftime("%H:%M") %> - <%= reserva.turno.hora_fin.strftime("%H:%M") %>
+  </p>
+</main>
